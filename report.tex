@@ -72,6 +72,7 @@
 
 \newcommand{\colaburl}{https://colab.research.google.com/drive/15joRmKadegeO1RI3dHm79bjFBoDKGjWD?usp=sharing}
 \newcommand{\githuburl}{https://github.com/aayushmanda/Pref_Ranking/}
+\newcommand{\officialurl}{https://github.com/angie-chen55/pref-learning-ranking-acc}
 
 \DeclareRobustCommand{\colabicon}{%
   \tikz[baseline=0ex, line cap=butt]{%
@@ -113,12 +114,20 @@
   \href{\githuburl}{\githubicon\,\texttt{GitHub}}%
 }
 
+\DeclareRobustCommand{\officialrepo}{%
+  \href{\officialurl}{\githubicon\,\texttt{angie-chen55/\allowbreak pref-learning-ranking-acc}}%
+}
+
+\DeclareRobustCommand{\officialreposhort}{%
+  \href{\officialurl}{\githubicon\,\texttt{Official Repo}}%
+}
+
 \title{Preference Learning Algorithms Do Not Learn Preference Rankings:\\[4pt]
 {\Large An Empirical and Theoretical Investigation of Chen et al.\ (2024)}}
 
 \author{%
   Aayushman\\[4pt]
-  {\normalfont\small \ghrepo{} \quad\textbullet\quad \prefnb{}}
+  {\normalfont\small \href{\githuburl}{\githubicon\,\texttt{github.com/aayushmanda/Pref\_Ranking}} \quad\textbullet\quad \prefnb{}}
 }
 
 \begin{document}
@@ -126,7 +135,7 @@
 \maketitle
 
 \begin{abstract}
-Direct Preference Optimization (DPO) steadily reduces training loss across epochs, which suggests that the trained policy $\pitheta$ learns to assign higher probability to preferred responses ($y_w$) than to dispreferred responses ($y_l$). Yet \citet{chen2024preference} show that DPO models achieve pairwise ranking accuracy $\Racc(\pitheta) < 60\%$ and flip fewer than $10\%$ of reference-model ranking errors before validation overfitting. In this report, we examine why this happens through analytical derivations, an audit of the authors' official codebase, IEEE-754 precision analysis, and a full-parameter \texttt{GPT-2} (124M) pipeline (\prefnb{}) trained on $16{,}000$ human preference dialogues \citep{bai2022training}. Writing the DPO logit as $u_\theta = \beta(\delta_\theta + c)$, where $\delta_\theta = \log \frac{\pitheta(y_w \mid x)}{\pitheta(y_l \mid x)}$ and $c = \log \frac{\piref(y_l \mid x)}{\piref(y_w \mid x)}$, we first show that sigmoid saturation shrinks per-example gradients by $75\times$ before large-$c$ pairs reach $\delta_\theta = 0$, while two bugs in the official scripts ($4/4 \mapsto 0.999$ vote clamping and an unexponentiated log-ratio division in \texttt{rlhf\_minimizer\_client.py}) overstate idealized accuracy $\Racc^*$. Next, we show that standard \texttt{float32} loss evaluation misclassifies $85.1\%$ of misranked tail pairs ($c \ge 167$) due to rounding in $1 + e^{-u}$, and that pure \texttt{bfloat16} master weights round $10^{-6}$ \texttt{RMSprop} updates to zero. Across $5$ epochs ($2{,}500$ steps) of \texttt{float32}-master-weight DPO on an \texttt{NVIDIA A100} GPU, mean probe loss drops by $45\%$ ($0.6931 \to 0.4690$ at $t^* = 1{,}100$ and $0.3807$ at Epoch~$5$), yet only $4.24\%$ ($22/519$) of misranked pairs flip at $t^*$. Strikingly, hard pairs ($c > 100$, $n = 202$) reach the lowest median loss ($0.217$) of all regimes while flipping $0.0\%$, matching Theorem~4.1 on all $1{,}000/1{,}000$ pairs.
+Direct Preference Optimization (DPO) steadily reduces training loss across epochs, which suggests that the trained policy $\pitheta$ learns to assign higher probability to preferred responses ($y_w$) than to dispreferred responses ($y_l$). Yet \citet{chen2024preference} show that DPO models achieve pairwise ranking accuracy $\Racc(\pitheta) < 60\%$ and flip fewer than $10\%$ of reference-model ranking errors before validation overfitting. In this report, we examine why this happens through analytical derivations, an audit of the authors' official codebase (\officialreposhort{}), IEEE-754 precision analysis, and a full-parameter \texttt{GPT-2} (124M) pipeline (\prefnb{}) trained on $16{,}000$ human preference dialogues \citep{bai2022training}. Writing the DPO logit as $u_\theta = \beta(\delta_\theta + c)$, where $\delta_\theta = \log \frac{\pitheta(y_w \mid x)}{\pitheta(y_l \mid x)}$ and $c = \log \frac{\piref(y_l \mid x)}{\piref(y_w \mid x)}$, we first show that sigmoid saturation shrinks per-example gradients by $75\times$ before large-$c$ pairs reach $\delta_\theta = 0$, while two bugs in the official scripts ($4/4 \mapsto 0.999$ vote clamping and an unexponentiated log-ratio division in \texttt{rlhf\_minimizer\_client.py}) overstate idealized accuracy $\Racc^*$. Next, we show that standard \texttt{float32} loss evaluation misclassifies $85.1\%$ of misranked tail pairs ($c \ge 167$) due to rounding in $1 + e^{-u}$, and that pure \texttt{bfloat16} master weights round $10^{-6}$ \texttt{RMSprop} updates to zero. Across $5$ epochs ($2{,}500$ steps) of \texttt{float32}-master-weight DPO on an \texttt{NVIDIA A100} GPU, mean probe loss drops by $45\%$ ($0.6931 \to 0.4690$ at $t^* = 1{,}100$ and $0.3807$ at Epoch~$5$), yet only $4.24\%$ ($22/519$) of misranked pairs flip at $t^*$. Strikingly, hard pairs ($c > 100$, $n = 202$) reach the lowest median loss ($0.217$) of all regimes while flipping $0.0\%$, matching Theorem~4.1 on all $1{,}000/1{,}000$ pairs.
 \end{abstract}
 
 % =========================================================================
@@ -313,7 +322,7 @@ Training for many more epochs cannot overcome this decay in practice because val
 
 \subsection{Why Claim 2 Overstates Idealized Ranking Accuracy \texorpdfstring{$\Racc^*$}{R*}}
 
-Auditing Appendix~B.4 and the official repository reveals two flaws that inflate the $19\text{--}59$\,pp idealized-accuracy gap in Claim~2:
+Auditing Appendix~B.4 and the official repository (\officialrepo{}) reveals two flaws that inflate the $19\text{--}59$\,pp idealized-accuracy gap in Claim~2:
 \begin{enumerate}[leftmargin=1.8em,itemsep=2pt,topsep=2pt]
   \item \textbf{Small-Sample Vote Clamping ($4/4 \mapsto 0.999$):} \citet{chen2024preference} estimate $\Racc^*$ on AlpacaFarm \citep{dubois2023alpacafarm} using $K = 4$ human votes per pair. Whenever all four raters agree ($\hat{p} = 4/4 = 1$), \texttt{calculate\_upper\_bound\_rlhf.py} clamps $\hat{p}$ to $1 - 10^{-3} = 0.999$ so $\log \frac{\hat{p}}{1-\hat{p}}$ remains finite. At $\beta = 0.10$, this sets the flip cutoff in Equation~\eqref{eq:idealized_acc} to $\frac{1}{0.1}\ln(999) \approx 69.1$. However, a pair with moderate true preference $p = 0.80$ produces unanimous $4/4$ votes $0.80^4 = 41.0\%$ of the time despite having a true cutoff of only $\frac{1}{0.1}\ln(4) \approx 13.9$, inflating $\Racc^*$ nearly fivefold on unanimous items.
   \item \textbf{Missing \texttt{np.exp} in \texttt{rlhf\_minimizer\_client.py}:} Whereas \texttt{calibration\_metrics\_lib.py} (lines~166--169) evaluates observed $\Racc$ using exponentiated log-likelihood differences, \texttt{rlhf\_minimizer\_client.py} (lines~215--218) omits \texttt{np.exp} when \texttt{normalized=False} and divides negative log-likelihoods directly: $\frac{\log \piref(y_1 \mid x)}{\log \piref(y_2 \mid x)} = \frac{L_1}{L_2}$, where $L_i = -\log \piref(y_i \mid x) > 0$. Whenever $y_w$ is longer ($L_w > L_l$), the true probability ratio $e^{-(L_w - L_l)} \ll 1$ penalizes $y_w$, whereas the unexponentiated ratio $L_w / L_l > 1$ inverts direction to favor the higher-NLL reply and compresses exponential gaps into an $O(1)$ factor. This bug explains why Table~1 of \citet{chen2024preference} reports unnormalized $\Racc^* \ge 90\%$ even at $\beta = 10$, where the true flip cutoff $\frac{1}{10}\ln(999) = 0.69$ is nearly zero.
@@ -381,14 +390,14 @@ Auditing Appendix~B.4 and the official repository reveals two flaws that inflate
     \node[widebox=amberbox, below=0.64cm of sft.south west, anchor=north west] (dpo) {
       \textbf{6. Stage 2: 5-Epoch DPO ($\pitheta$)}\\[1pt]
       Init $\theta_0 \leftarrow \theta_{\mathrm{ref}}$, disable dropout, $\beta = 0.1$\\
-      \texttt{RMSprop} ($\alpha\!=\!0.99, \epsilon\!=\!10^{-8}$), \texttt{float32} weights\\
+      \texttt{RMSprop} ($\text{lr}=10^{-6}$), \texttt{float32} master weights\\
       2,500 steps, record min Val $\LDPO$ step $t^*$
     };
 
     \node[widebox=crimson, at=(dpo.north -| splits.east), anchor=north east] (eval) {
       \textbf{7. Tracked Diagnostics}\\[1pt]
       Pre-SFT vs.\ Post-SFT $\Racc, \Racctilde$ and $\ell_w - \ell_l$\\
-      Four-group trajectories ($\CtoC, \CtoI, \ItoC, \ItoI$)\\
+      4-group dynamics ($\CtoC, \CtoI, \ItoC, \ItoI$)\\
       $\LDPO(\pithetastar)$ vs.\ $c$ boundary \& RMLR slices
     };
 
@@ -403,7 +412,7 @@ Auditing Appendix~B.4 and the official repository reveals two flaws that inflate
     \draw[arrow] (cache.south) |- (mid23) -| (dpo.north);
     \draw[arrow] (dpo.east) -- (eval.west);
   \end{tikzpicture}
-  \caption{\textbf{Seven-Stage \texttt{GPT-2} (124M) SFT-to-DPO Pipeline Implemented in \prefnb{} / \ghrepo{}.}}
+  \caption{\textbf{Seven-Stage \texttt{GPT-2} (124M) SFT-to-DPO Pipeline} (\prefnb{} \,\textbullet\, \ghrepo{}).}
   \label{fig:pipeline_schematic}
 \end{figure}
 
@@ -413,7 +422,7 @@ Figure~\ref{fig:pipeline_schematic} summarizes our end-to-end PyTorch pipeline i
 
 \begin{table}[t]
   \centering
-  \caption{\textbf{Implementation Errors Identified in the Official Repository of \citet{chen2024preference} Versus Our Fixes in \prefnb{}.}}
+  \caption{\textbf{Implementation Errors Identified in the Official Repository (\officialreposhort{}) of \citet{chen2024preference} Versus Our Fixes in \prefnb{} / \ghrepo{}.}}
   \label{tab:codebase_vs_ours}
   \footnotesize
   \renewcommand{\arraystretch}{1.16}

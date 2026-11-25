@@ -1,8 +1,8 @@
 # Preference Learning Algorithms Do Not Learn Preference Rankings: An Empirical and Theoretical Investigation of Chen et al. (2024)
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-aayushmanda%2FPref__Ranking-181717?logo=github&logoColor=white)](https://github.com/aayushmanda/Pref_Ranking/) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15joRmKadegeO1RI3dHm79bjFBoDKGjWD)
-**Author:** Aayushman  
-**Repository:** [<img src="https://github.githubassets.com/favicons/favicon.svg" width="14" height="14" alt="GitHub" /> `aayushmanda/Pref_Ranking`](https://github.com/aayushmanda/Pref_Ranking/) | **Report PDF:** [`report.pdf`](./report.pdf) | **LaTeX Source:** [`report.tex`](./report.tex) | **Notebook:** [`code.ipynb`](./code.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15joRmKadegeO1RI3dHm79bjFBoDKGjWD) [![Official Paper Repo](https://img.shields.io/badge/Official_Paper_Repo-angie--chen55%2Fpref--learning--ranking--acc-24292F?logo=github&logoColor=white)](https://github.com/angie-chen55/pref-learning-ranking-acc)  
+**Repository:** [ `https://github.com/aayushmanda/Pref_Ranking/`](https://github.com/aayushmanda/Pref_Ranking/) | **Official Paper Repo:** [ `https://github.com/angie-chen55/pref-learning-ranking-acc`](https://github.com/angie-chen55/pref-learning-ranking-acc)  
+**Report PDF:** [`report.pdf`](./report.pdf) | **LaTeX Source:** [`report.tex`](./report.tex) | **Notebook:** [`code.ipynb`](./code.ipynb)
 
 ---
 
@@ -89,7 +89,7 @@ $$\delta_\theta = \log \frac{\pi_\theta(y_w \mid x)}{\pi_\theta(y_l \mid x)}, \q
 
 ### 2. Four Bugs Identified in the Official Codebase vs. Our Implementation
 
-While auditing `https://github.com/angie-chen55/pref-learning-ranking-acc`, we identified and fixed four implementation bugs:
+While auditing the authors' official repository ([<img src="https://github.githubassets.com/favicons/favicon.svg" width="14" height="14" alt="GitHub" /> `https://github.com/angie-chen55/pref-learning-ranking-acc`](https://github.com/angie-chen55/pref-learning-ranking-acc)), we identified and fixed four implementation bugs:
 
 1. **Missing `np.exp` in Idealized Accuracy (`rlhf_minimizer_client.py`, L215–218):** When `normalized=False`, the official script omits `np.exp` and divides negative log-probabilities $(-L_1)/(-L_2) = L_1 / L_2$ directly. Whenever $y_w$ is longer ($L_w > L_l$), the true ratio $e^{-(L_w - L_l)} \ll 1$ penalizes $y_w$, whereas $L_w / L_l > 1$ inverts direction to favor the longer reply and inflates unnormalized $\mathcal{R}^*$. Our code evaluates all inequalities directly in log-probability space.
 2. **`float64` Exponentiation Overflow (`calibration_metrics_lib.py`, L166–195):** Calling `np.exp(log_p1 - log_p2)` overflows to `+inf` whenever $\delta_\theta > 709.78$ and drops strongly correct pairs via `~np.isinf`, whereas strongly misranked pairs ($\delta_\theta < -709.78$, such as our probe pair at $c = +724.72$) underflow to `0.0` and stay in the denominator. Comparing `logp_yw >= logp_yl` directly retains `100%` of pairs.
