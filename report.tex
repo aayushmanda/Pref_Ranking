@@ -84,7 +84,7 @@
 }
 
 \DeclareRobustCommand{\githubicon}{%
-  \tikz[baseline=-0.12ex, scale=0.68ex]{%
+  \tikz[baseline=-0.08ex, x=0.68ex, y=0.68ex]{%
     \fill[githubBlack] (0,0.82) circle (1.0);
     \fill[white]
       (-0.21,-0.16) -- (-0.21,0.20)
@@ -372,7 +372,7 @@ Auditing Appendix~B.4 and the official repository reveals two flaws that inflate
 
     \node[widebox=tealbox, at=(sft.north -| splits.east), anchor=north east] (cache) {
       \textbf{5. Exact $\log \piref$ Cache}\\[1pt]
-      Precompute $\log \piref(y_w \mid x)$ and $\log \piref(y_l \mid x)$\\
+      Cache $\log \piref(y_w \mid x)$ and $\log \piref(y_l \mid x)$\\
       Store RMLR $c$ for Train, Val, and 1K Probe\\
       Eliminates second model from GPU memory
     };
@@ -381,7 +381,7 @@ Auditing Appendix~B.4 and the official repository reveals two flaws that inflate
     \node[widebox=amberbox, below=0.64cm of sft.south west, anchor=north west] (dpo) {
       \textbf{6. Stage 2: 5-Epoch DPO ($\pitheta$)}\\[1pt]
       Init $\theta_0 \leftarrow \theta_{\mathrm{ref}}$, disable dropout, $\beta = 0.1$\\
-      \texttt{RMSprop} ($\alpha=0.99$, $\epsilon=10^{-8}$), \texttt{float32} weights\\
+      \texttt{RMSprop} ($\alpha\!=\!0.99, \epsilon\!=\!10^{-8}$), \texttt{float32} weights\\
       2,500 steps, record min Val $\LDPO$ step $t^*$
     };
 
