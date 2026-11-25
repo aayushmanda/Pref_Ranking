@@ -1,14 +1,9 @@
 # Preference Learning Algorithms Do Not Learn Preference Rankings
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-aayushmanda%2FPref__Ranking-181717?logo=github&logoColor=white)](https://github.com/aayushmanda/Pref_Ranking/) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15joRmKadegeO1RI3dHm79bjFBoDKGjWD) [![Official Paper Repo](https://img.shields.io/badge/Official_Paper_Repo-angie--chen55%2Fpref--learning--ranking--acc-24292F?logo=github&logoColor=white)](https://github.com/angie-chen55/pref-learning-ranking-acc)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15joRmKadegeO1RI3dHm79bjFBoDKGjWD)
 
-**Author:** Aayushman  
-**Links:** [Report (`report.pdf`)](./report.pdf) · [LaTeX (`report.tex`)](./report.tex) · [Notebook (`code.ipynb`)](./code.ipynb) · [<img src="https://github.githubassets.com/favicons/favicon.svg" width="13" height="13" alt="" /> Project Repo](https://github.com/aayushmanda/Pref_Ranking/) · [<img src="https://github.githubassets.com/favicons/favicon.svg" width="13" height="13" alt="" /> Official Paper Repo](https://github.com/angie-chen55/pref-learning-ranking-acc)
+**Links:** [Report (`report.pdf`)](./report.pdf) · [Notebook (`code.ipynb`)](./code.ipynb) · [<img src="https://github.githubassets.com/favicons/favicon.svg" width="13" height="13" alt="" /> Project Repo](https://github.com/aayushmanda/Pref_Ranking/) · [<img src="https://github.githubassets.com/favicons/favicon.svg" width="13" height="13" alt="" /> Official Paper Repo](https://github.com/angie-chen55/pref-learning-ranking-acc)
 
-**Author:** Aayushman  
-**Links:** [Report (`report.pdf`)](./report.pdf) · [LaTeX (`report.tex`)](./report.tex) · [Notebook (`code.ipynb`)](./code.ipynb) · [<img src="https://github.githubassets.com/favicons/favicon.svg" width="13" height="13" alt="" /> Project Repo](https://github.com/aayushmanda/Pref_Ranking/)
-
----
 
 ## Overview
 
