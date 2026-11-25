@@ -1,0 +1,195 @@
+% neurips_2024_11pt.sty
+% Authentic NeurIPS 2024 style (Times ptm + Helvetica phv + CM Typewriter + CM/AMS Math)
+% preserving 11-point body font (\documentclass[11pt]{article}).
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{neurips_2024_11pt}[2024/11/24 NeurIPS 2024 style with 11pt body]
+
+\RequirePackage{environ}
+\RequirePackage{natbib}
+\setcitestyle{numbers,square,comma}
+
+% Authentic NeurIPS fonts: Adobe Times Roman (ptm) + Helvetica (phv) + CM Typewriter (cmtt)
+% Leaves math fonts as authentic Computer Modern (cmmi/cmsy/cmex) + AMS Fonts!
+\renewcommand{\rmdefault}{ptm}
+\renewcommand{\sfdefault}{phv}
+
+% Authentic NeurIPS 2024 page geometry
+\RequirePackage[
+  verbose=true,
+  letterpaper,
+  textheight=9.0in,
+  textwidth=5.5in,
+  top=1.0in,
+  headheight=12pt,
+  headsep=25pt,
+  footskip=30pt
+]{geometry}
+
+\widowpenalty=10000
+\clubpenalty=10000
+\flushbottom
+\sloppy
+
+% Preserve true 11pt body font (\@xipt on 13.6pt leading) while keeping NeurIPS display skips
+\renewcommand{\normalsize}{%
+  \@setfontsize\normalsize\@xipt{13.6}%
+  \abovedisplayskip      8\p@ \@plus 2\p@ \@minus 4\p@
+  \abovedisplayshortskip \z@ \@plus 3\p@
+  \belowdisplayskip      \abovedisplayskip
+  \belowdisplayshortskip 5\p@ \@plus 2\p@ \@minus 3\p@
+  \let\@listi\@listI
+}
+\normalsize
+
+\renewcommand{\small}{%
+  \@setfontsize\small\@xpt\@xiipt
+  \abovedisplayskip      6\p@ \@plus 1.5\p@ \@minus 4\p@
+  \abovedisplayshortskip \z@  \@plus 2\p@
+  \belowdisplayskip      \abovedisplayskip
+  \belowdisplayshortskip 3\p@ \@plus 2\p@   \@minus 2\p@
+}
+
+\renewcommand{\footnotesize}{\@setfontsize\footnotesize\@ixpt\@xipt}
+\renewcommand{\scriptsize}{\@setfontsize\scriptsize\@viipt\@viiipt}
+\renewcommand{\tiny}{\@setfontsize\tiny\@vipt\@viipt}
+\renewcommand{\large}{\@setfontsize\large\@xiipt{14}}
+\renewcommand{\Large}{\@setfontsize\Large\@xivpt{16}}
+\renewcommand{\LARGE}{\@setfontsize\LARGE\@xviipt{20}}
+\renewcommand{\huge}{\@setfontsize\huge\@xxpt{23}}
+\renewcommand{\Huge}{\@setfontsize\Huge\@xxvpt{28}}
+
+% NeurIPS block paragraphs
+\setlength{\parindent}{\z@}
+\setlength{\parskip}{5.5\p@ \@plus 1\p@ \@minus 1\p@}
+
+% NeurIPS section headings
+\renewcommand{\section}{%
+  \@startsection{section}{1}{\z@}%
+                {-2.0ex \@plus -0.5ex \@minus -0.2ex}%
+                { 1.5ex \@plus  0.3ex \@minus  0.2ex}%
+                {\large\bf\raggedright}%
+}
+\renewcommand{\subsection}{%
+  \@startsection{subsection}{2}{\z@}%
+                {-1.8ex \@plus -0.5ex \@minus -0.2ex}%
+                { 0.8ex \@plus  0.2ex}%
+                {\normalsize\bf\raggedright}%
+}
+\renewcommand{\subsubsection}{%
+  \@startsection{subsubsection}{3}{\z@}%
+                {-1.5ex \@plus -0.5ex \@minus -0.2ex}%
+                { 0.5ex \@plus  0.2ex}%
+                {\normalsize\bf\raggedright}%
+}
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}{\z@}%
+                {1.5ex \@plus 0.5ex \@minus 0.2ex}%
+                {-1em}%
+                {\normalsize\bf}%
+}
+
+% Float placement parameters from neurips_2024.sty
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.4}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.7}
+
+\newlength{\@neuripsabovecaptionskip}\setlength{\@neuripsabovecaptionskip}{7\p@}
+\newlength{\@neuripsbelowcaptionskip}\setlength{\@neuripsbelowcaptionskip}{\z@}
+\setlength{\abovecaptionskip}{\@neuripsabovecaptionskip}
+\setlength{\belowcaptionskip}{\@neuripsbelowcaptionskip}
+
+% Swap above/below caption skip for tables (exact neurips_2024.sty behavior)
+\renewenvironment{table}
+  {\setlength{\abovecaptionskip}{\@neuripsbelowcaptionskip}%
+   \setlength{\belowcaptionskip}{\@neuripsabovecaptionskip}%
+   \@float{table}}
+  {\end@float}
+
+% Footnote formatting from neurips_2024.sty
+\setlength{\footnotesep}{6.65\p@}
+\setlength{\skip\footins}{9\p@ \@plus 4\p@ \@minus 2\p@}
+\renewcommand{\footnoterule}{\kern-3\p@ \hrule width 12pc \kern 2.6\p@}
+
+% NeurIPS top & bottom title bars
+\newcommand{\@toptitlebar}{%
+  \hrule height 4\p@
+  \vskip 0.25in
+  \vskip -\parskip
+}
+\newcommand{\@bottomtitlebar}{%
+  \vskip 0.29in
+  \vskip -\parskip
+  \hrule height 1\p@
+  \vskip 0.09in
+}
+
+% Authentic NeurIPS \And and \AND author macros
+\def\And{%
+  \end{tabular}\hfil\linebreak[0]\hfil%
+  \begin{tabular}[t]{c}\bf\rule{\z@}{24\p@}\ignorespaces%
+}
+\def\AND{%
+  \end{tabular}\hfil\linebreak[4]\hfil%
+  \begin{tabular}[t]{c}\bf\rule{\z@}{24\p@}\ignorespaces%
+}
+
+% Bottom first-page notice (Course Project Report style)
+\newcommand{\@noticestring}{%
+  Course Project Report: An Empirical and Theoretical Investigation of Chen et al.\ (NeurIPS 2024).%
+}
+\newcommand{\ftype@noticebox}{8}
+\newcommand{\@notice}{%
+  \enlargethispage{2\baselineskip}%
+  \@float{noticebox}[b]%
+    \footnotesize\@noticestring%
+  \end@float%
+}
+
+\renewcommand{\maketitle}{%
+  \par
+  \begingroup
+    \renewcommand{\thefootnote}{\fnsymbol{footnote}}%
+    \renewcommand{\@makefnmark}{\hbox to \z@{$^{\@thefnmark}$\hss}}%
+    \long\def\@makefntext##1{%
+      \parindent 1em\noindent
+      \hbox to 1.8em{\hss $\m@th ^{\@thefnmark}$}##1%
+    }%
+    \thispagestyle{empty}%
+    \@maketitle
+    \@thanks
+    \@notice
+  \endgroup
+  \let\maketitle\relax
+  \let\thanks\relax
+}
+
+\renewcommand{\@maketitle}{%
+  \vbox{%
+    \hsize\textwidth
+    \linewidth\hsize
+    \vskip 0.1in
+    \@toptitlebar
+    \centering
+    {\LARGE\bf \@title\par}
+    \@bottomtitlebar
+    \begin{tabular}[t]{c}\bf\rule{\z@}{24\p@}\@author\end{tabular}%
+    \vskip 0.3in \@minus 0.1in
+  }%
+}
+
+% Authentic NeurIPS abstract environment
+\renewenvironment{abstract}%
+{%
+  \vskip 0.075in%
+  \centerline{\large\bf Abstract}%
+  \vspace{0.5ex}%
+  \begin{quote}%
+}
+{
+  \par%
+  \end{quote}%
+  \vskip 1ex%
+}
+
+\endinput

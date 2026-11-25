@@ -1,0 +1,25 @@
+# add files other tan notebook sty adn pdf  tex
+*.pt
+*.fls
+*.zip
+*.tar.gz
+*.csv
+*.npz
+*.log
+*.jpg
+*.png
+!dpo_ranking_replication_outputs/*.png
+*.pkl
+*.pyc
+__pycache__/
+*.blg
+*.bbl
+*.aux
+*.out
+*.toc
+*.lof
+*.lot
+*.nav
+*.out
+*.fdb_latexmk
+*.synctex.*
