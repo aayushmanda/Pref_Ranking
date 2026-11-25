@@ -8,8 +8,6 @@
 *.log
 *.jpg
 *.png
-!dpo_ranking_replication_outputs/*.png
-*.pkl
 *.pyc
 __pycache__/
 *.blg
@@ -23,3 +21,4 @@ __pycache__/
 *.out
 *.fdb_latexmk
 *.synctex.*
+pref.ipynb

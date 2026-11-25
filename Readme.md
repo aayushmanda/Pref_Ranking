@@ -61,16 +61,7 @@ $$\delta_\theta = \log \frac{\pi_\theta(y_w \mid x)}{\pi_\theta(y_l \mid x)}, \q
    - `preset="full_paper"` (`159,878` cleaned train pairs across 3 seeds `[42, 123, 456]`).
 3. **Run all cells** (`Kernel -> Restart Kernel and Run All Cells`). Figures and `progress_checkpoint.pkl` are written automatically to `./dpo_ranking_replication_outputs/`.
 
-### 2. Compiling the LaTeX Report
-
-```bash
-pdflatex -interaction=nonstopmode replication_report.tex
-bibtex replication_report
-pdflatex -interaction=nonstopmode replication_report.tex
-pdflatex -interaction=nonstopmode replication_report.tex
-```
-
-### 3. Seven-Stage Experimental Workflow
+### 2. Seven-Stage Experimental Workflow
 
 1. **Data Loading & Shared-Prefix Dialogue Parsing (`Cell 3`):** Downloads `Anthropic/hh-rlhf`, locates the first character divergence between `chosen` and `rejected`, backtracks to the last shared `\n\nAssistant:` turn header, and drops `922` train / `47` test exact ties or empty continuations (`159,878` valid train pairs, `8,505` valid test pairs).
 2. **Deterministic Zero-Leakage Splits (`Cell 3`):** Splits the cleaned test set `50/50` (`seed=0`) into validation (`val_data`, `2,000` pairs) and held-out test (`4,253` pairs), samples `16,000` training pairs (`seed=42`), and locks the first `1,000` training pairs as a fixed probe (`probe_1k_data`).
