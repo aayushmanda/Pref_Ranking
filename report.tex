@@ -51,6 +51,7 @@
 \definecolor{royalblue}{HTML}{2B6CB0}
 \definecolor{colabGold}{HTML}{F9AB00}
 \definecolor{colabOrange}{HTML}{E8710A}
+\definecolor{githubBlack}{HTML}{181717}
 
 \pgfplotsset{
   neuripsplot/.style={
@@ -70,6 +71,7 @@
 }
 
 \newcommand{\colaburl}{https://colab.research.google.com/drive/15joRmKadegeO1RI3dHm79bjFBoDKGjWD?usp=sharing}
+\newcommand{\githuburl}{https://github.com/aayushmanda/Pref_Ranking/}
 
 \DeclareRobustCommand{\colabicon}{%
   \tikz[baseline=0ex, line cap=butt]{%
@@ -81,16 +83,42 @@
   }%
 }
 
+\DeclareRobustCommand{\githubicon}{%
+  \tikz[baseline=-0.12ex, scale=0.68ex]{%
+    \fill[githubBlack] (0,0.82) circle (1.0);
+    \fill[white]
+      (-0.21,-0.16) -- (-0.21,0.20)
+      .. controls (-0.48,0.14) and (-0.55,0.34) .. (-0.66,0.40)
+      .. controls (-0.70,0.42) and (-0.64,0.46) .. (-0.56,0.43)
+      .. controls (-0.46,0.39) and (-0.42,0.26) .. (-0.21,0.29)
+      -- (-0.21,0.40)
+      .. controls (-0.48,0.45) and (-0.64,0.62) .. (-0.64,0.90)
+      .. controls (-0.64,1.05) and (-0.58,1.16) .. (-0.49,1.25)
+      .. controls (-0.53,1.36) and (-0.53,1.48) .. (-0.46,1.56)
+      .. controls (-0.36,1.56) and (-0.25,1.48) .. (-0.18,1.40)
+      .. controls (-0.06,1.43) and (0.06,1.43) .. (0.18,1.40)
+      .. controls (0.25,1.48) and (0.36,1.56) .. (0.46,1.56)
+      .. controls (0.53,1.48) and (0.53,1.36) .. (0.49,1.25)
+      .. controls (0.58,1.16) and (0.64,1.05) .. (0.64,0.90)
+      .. controls (0.64,0.62) and (0.48,0.45) .. (0.21,0.40)
+      -- (0.21,-0.16) -- cycle;
+  }%
+}
+
 \DeclareRobustCommand{\prefnb}{%
-  \href{\colaburl}{\colabicon\,\texttt{Code}}%
+  \href{\colaburl}{\colabicon\,\texttt{Colab}}%
+}
+
+\DeclareRobustCommand{\ghrepo}{%
+  \href{\githuburl}{\githubicon\,\texttt{GitHub}}%
 }
 
 \title{Preference Learning Algorithms Do Not Learn Preference Rankings:\\[4pt]
 {\Large An Empirical and Theoretical Investigation of Chen et al.\ (2024)}}
 
 \author{%
-  Aayushman\\[3pt]
-  {\normalfont\small \prefnb{}}
+  Aayushman\\[4pt]
+  {\normalfont\small \ghrepo{} \quad\textbullet\quad \prefnb{}}
 }
 
 \begin{document}
@@ -299,76 +327,83 @@ Auditing Appendix~B.4 and the official repository reveals two flaws that inflate
 \begin{figure}[t]
   \centering
   \begin{tikzpicture}[
-    node distance=0.48cm and 0.30cm,
+    node distance=0.30cm,
     box/.style={
       rectangle, rounded corners=3.5pt, draw=#1, line width=0.8pt,
-      fill=#1!6, text width=4.05cm, minimum height=1.42cm,
-      align=center, font=\footnotesize, inner sep=3.5pt
+      fill=#1!6, text width=4.05cm, minimum height=1.50cm,
+      align=center, font=\footnotesize, inner sep=4pt
     },
     widebox/.style={
       rectangle, rounded corners=3.5pt, draw=#1, line width=0.8pt,
-      fill=#1!7, text width=6.28cm, minimum height=1.55cm,
-      align=center, font=\footnotesize, inner sep=3.5pt
+      fill=#1!7, text width=6.25cm, minimum height=1.82cm,
+      align=center, font=\footnotesize, inner sep=4pt
     },
     arrow/.style={-{Stealth[length=2.2mm,width=1.7mm]}, thick, draw=navybox!85}
   ]
+    % Row 1: Three equal-height data preparation boxes
     \node[box=navybox] (raw) {
-      \textbf{1. Dialogue Dataset}\\
+      \textbf{1. Dialogue Dataset}\\[1pt]
       \texttt{Anthropic/hh-rlhf}\\
       160.8K train \,|\, 8.55K test\\
       Multi-turn human comparisons
     };
 
-    \node[box=navybox, right=of raw] (parse) {
-      \textbf{2. Shared-Prefix Parser}\\
+    \node[box=navybox, right=0.32cm of raw] (parse) {
+      \textbf{2. Shared-Prefix Parser}\\[1pt]
       Step back to last shared\\
-      \texttt{\textbackslash n\textbackslash nAssistant:} turn,\\
+      \texttt{\textbackslash n\textbackslash nAssistant:} header,\\
       drop ties ($y_w = y_l$) \& nulls
     };
 
-    \node[box=navybox, right=of parse] (splits) {
-      \textbf{3. Deterministic Splits}\\
+    \node[box=navybox, right=0.32cm of parse] (splits) {
+      \textbf{3. Deterministic Splits}\\[1pt]
       16K Train + \textbf{1K Probe}\\
       Test $50/50 \to$ 2K Val / Test\\
       Left-truncate $x$ ($\ell_x + \ell_y \le 512$)
     };
 
-    \node[widebox=tealbox, below=0.58cm of raw.south west, anchor=north west] (sft) {
-      \textbf{4. Stage 1: SFT Reference ($\piref$)}\\
-      Full-parameter \texttt{gpt2} (124M) on $(x, y_w)$, prompt masked\\
-      \texttt{AdamW} ($\text{lr}=10^{-5}$, $\beta_1=0.9$, $\beta_2=0.999$, $\epsilon=10^{-8}$), 1 epoch\\
-      Restore checkpoint with lowest validation token NLL
+    % Row 2: Two equal-height Stage 1 & Cache boxes aligned horizontally
+    \node[widebox=tealbox, below=0.64cm of raw.south west, anchor=north west] (sft) {
+      \textbf{4. Stage 1: SFT Reference ($\piref$)}\\[1pt]
+      Full-parameter \texttt{gpt2} (124M) on $(x, y_w)$\\
+      Prompt masked (\texttt{-100}), \texttt{AdamW} ($\text{lr}=10^{-5}$)\\
+      1 epoch, keep min validation token NLL
     };
 
-    \node[widebox=tealbox, below=0.58cm of splits.south east, anchor=north east] (cache) {
-      \textbf{5. Exact $\log \piref$ Cache}\\
-      Precompute $\log \piref(y_w \mid x)$ and $\log \piref(y_l \mid x)$ once\\
+    \node[widebox=tealbox, at=(sft.north -| splits.east), anchor=north east] (cache) {
+      \textbf{5. Exact $\log \piref$ Cache}\\[1pt]
+      Precompute $\log \piref(y_w \mid x)$ and $\log \piref(y_l \mid x)$\\
       Store RMLR $c$ for Train, Val, and 1K Probe\\
       Eliminates second model from GPU memory
     };
 
-    \node[widebox=amberbox, below=0.58cm of sft] (dpo) {
-      \textbf{6. Stage 2: 5-Epoch DPO ($\pitheta$)}\\
-      Init $\theta_0 \leftarrow \theta_{\mathrm{ref}}$, disable dropout, $\beta = 0.1$, 2,500 steps\\
-      \texttt{RMSprop} ($\alpha=0.99$, $\epsilon=10^{-8}$), \texttt{float32} master weights\\
-      Evaluate $5\times$/epoch and record min Val $\LDPO$ step $t^*$
+    % Row 3: Two equal-height Stage 2 & Diagnostics boxes aligned horizontally
+    \node[widebox=amberbox, below=0.64cm of sft.south west, anchor=north west] (dpo) {
+      \textbf{6. Stage 2: 5-Epoch DPO ($\pitheta$)}\\[1pt]
+      Init $\theta_0 \leftarrow \theta_{\mathrm{ref}}$, disable dropout, $\beta = 0.1$\\
+      \texttt{RMSprop} ($\alpha=0.99$, $\epsilon=10^{-8}$), \texttt{float32} weights\\
+      2,500 steps, record min Val $\LDPO$ step $t^*$
     };
 
-    \node[widebox=crimson, below=0.58cm of cache] (eval) {
-      \textbf{7. Tracked Diagnostics}\\
-      $\bullet$ Pre-SFT vs.\ Post-SFT $\Racc, \Racctilde$ and length spread $\ell_w - \ell_l$\\
-      $\bullet$ Four-group trajectories ($\CtoC, \CtoI, \ItoC, \ItoI$)\\
-      $\bullet$ $\LDPO(\pithetastar)$ vs.\ $c$ phase boundary \& RMLR slices
+    \node[widebox=crimson, at=(dpo.north -| splits.east), anchor=north east] (eval) {
+      \textbf{7. Tracked Diagnostics}\\[1pt]
+      Pre-SFT vs.\ Post-SFT $\Racc, \Racctilde$ and $\ell_w - \ell_l$\\
+      Four-group trajectories ($\CtoC, \CtoI, \ItoC, \ItoI$)\\
+      $\LDPO(\pithetastar)$ vs.\ $c$ boundary \& RMLR slices
     };
 
-    \draw[arrow] (raw) -- (parse);
-    \draw[arrow] (parse) -- (splits);
-    \draw[arrow] (splits.south) -- ++(0,-0.25) -| (sft.north);
-    \draw[arrow] (sft) -- (cache);
-    \draw[arrow] (cache.south) -- ++(0,-0.25) -| (dpo.north);
-    \draw[arrow] (dpo) -- (eval);
+    % Clean midpoint corridors strictly between rows (zero box overlap)
+    \coordinate (mid12) at ($(raw.south)!0.5!(sft.north)$);
+    \coordinate (mid23) at ($(sft.south)!0.5!(dpo.north)$);
+
+    \draw[arrow] (raw.east) -- (parse.west);
+    \draw[arrow] (parse.east) -- (splits.west);
+    \draw[arrow] (splits.south) |- (mid12) -| (sft.north);
+    \draw[arrow] (sft.east) -- (cache.west);
+    \draw[arrow] (cache.south) |- (mid23) -| (dpo.north);
+    \draw[arrow] (dpo.east) -- (eval.west);
   \end{tikzpicture}
-  \caption{\textbf{Seven-Stage \texttt{GPT-2} (124M) SFT-to-DPO Pipeline Implemented in \prefnb{}.}}
+  \caption{\textbf{Seven-Stage \texttt{GPT-2} (124M) SFT-to-DPO Pipeline Implemented in \prefnb{} / \ghrepo{}.}}
   \label{fig:pipeline_schematic}
 \end{figure}
 
