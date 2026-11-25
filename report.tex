@@ -336,18 +336,25 @@ Auditing Appendix~B.4 and the official repository (\officialrepo{}) reveals two 
 \begin{figure}[t]
   \centering
   \begin{tikzpicture}[
-    node distance=0.30cm,
     box/.style={
-      rectangle, rounded corners=3.5pt, draw=#1, line width=0.8pt,
-      fill=#1!6, text width=4.05cm, minimum height=1.50cm,
+      rectangle, rounded corners=4.5pt, draw=#1!85!black, line width=0.8pt,
+      fill=#1!6, text width=4.05cm, minimum height=1.54cm,
       align=center, font=\footnotesize, inner sep=4pt
     },
     widebox/.style={
-      rectangle, rounded corners=3.5pt, draw=#1, line width=0.8pt,
-      fill=#1!7, text width=6.25cm, minimum height=1.82cm,
+      rectangle, rounded corners=4.5pt, draw=#1!85!black, line width=0.8pt,
+      fill=#1!7, text width=6.26cm, minimum height=1.82cm,
       align=center, font=\footnotesize, inner sep=4pt
     },
-    arrow/.style={-{Stealth[length=2.2mm,width=1.7mm]}, thick, draw=navybox!85}
+    arrow/.style={
+      -{Latex[length=1.85mm, width=1.45mm, round]},
+      line width=0.85pt,
+      draw=navybox!80,
+      line cap=round,
+      line join=round,
+      shorten <=2.0pt,
+      shorten >=2.0pt
+    }
   ]
     % Row 1: Three equal-height data preparation boxes
     \node[box=navybox] (raw) {
@@ -357,14 +364,14 @@ Auditing Appendix~B.4 and the official repository (\officialrepo{}) reveals two 
       Multi-turn human comparisons
     };
 
-    \node[box=navybox, right=0.32cm of raw] (parse) {
+    \node[box=navybox, right=0.42cm of raw] (parse) {
       \textbf{2. Shared-Prefix Parser}\\[1pt]
       Step back to last shared\\
       \texttt{\textbackslash n\textbackslash nAssistant:} header,\\
       drop ties ($y_w = y_l$) \& nulls
     };
 
-    \node[box=navybox, right=0.32cm of parse] (splits) {
+    \node[box=navybox, right=0.42cm of parse] (splits) {
       \textbf{3. Deterministic Splits}\\[1pt]
       16K Train + \textbf{1K Probe}\\
       Test $50/50 \to$ 2K Val / Test\\
@@ -372,7 +379,7 @@ Auditing Appendix~B.4 and the official repository (\officialrepo{}) reveals two 
     };
 
     % Row 2: Two equal-height Stage 1 & Cache boxes aligned horizontally
-    \node[widebox=tealbox, below=0.64cm of raw.south west, anchor=north west] (sft) {
+    \node[widebox=tealbox, below=0.88cm of raw.south west, anchor=north west] (sft) {
       \textbf{4. Stage 1: SFT Reference ($\piref$)}\\[1pt]
       Full-parameter \texttt{gpt2} (124M) on $(x, y_w)$\\
       Prompt masked (\texttt{-100}), \texttt{AdamW} ($\text{lr}=10^{-5}$)\\
@@ -387,7 +394,7 @@ Auditing Appendix~B.4 and the official repository (\officialrepo{}) reveals two 
     };
 
     % Row 3: Two equal-height Stage 2 & Diagnostics boxes aligned horizontally
-    \node[widebox=amberbox, below=0.64cm of sft.south west, anchor=north west] (dpo) {
+    \node[widebox=amberbox, below=0.88cm of sft.south west, anchor=north west] (dpo) {
       \textbf{6. Stage 2: 5-Epoch DPO ($\pitheta$)}\\[1pt]
       Init $\theta_0 \leftarrow \theta_{\mathrm{ref}}$, disable dropout, $\beta = 0.1$\\
       \texttt{RMSprop} ($\text{lr}=10^{-6}$), \texttt{float32} master weights\\
@@ -401,15 +408,17 @@ Auditing Appendix~B.4 and the official repository (\officialrepo{}) reveals two 
       $\LDPO(\pithetastar)$ vs.\ $c$ boundary \& RMLR slices
     };
 
-    % Clean midpoint corridors strictly between rows (zero box overlap)
+    % Smooth, exact 4-point midpoint corridors (zero overshoot, rounded bends)
     \coordinate (mid12) at ($(raw.south)!0.5!(sft.north)$);
     \coordinate (mid23) at ($(sft.south)!0.5!(dpo.north)$);
 
     \draw[arrow] (raw.east) -- (parse.west);
     \draw[arrow] (parse.east) -- (splits.west);
-    \draw[arrow] (splits.south) |- (mid12) -| (sft.north);
+    \draw[arrow, rounded corners=3.5pt]
+      (splits.south) -- (splits.south |- mid12) -- (sft.north |- mid12) -- (sft.north);
     \draw[arrow] (sft.east) -- (cache.west);
-    \draw[arrow] (cache.south) |- (mid23) -| (dpo.north);
+    \draw[arrow, rounded corners=3.5pt]
+      (cache.south) -- (cache.south |- mid23) -- (dpo.north |- mid23) -- (dpo.north);
     \draw[arrow] (dpo.east) -- (eval.west);
   \end{tikzpicture}
   \caption{\textbf{Seven-Stage \texttt{GPT-2} (124M) SFT-to-DPO Pipeline} (\prefnb{} \,\textbullet\, \ghrepo{}).}
